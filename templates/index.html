@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trabalho Unifecaf · Controle de peças</title>
+  <link rel="icon" href="{{ url_for('static', filename='logo.svg') }}" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div id="tela-login" class="login-tela">
+    <div class="login-painel">
+      <section class="login-marca" aria-labelledby="login-titulo">
+        <img class="login-logo" src="{{ url_for('static', filename='logo.svg') }}" alt="" width="48" height="48">
+        <p class="login-kicker">Controle de qualidade</p>
+        <h1 id="login-titulo">Trabalho Unifecaf</h1>
+        <p class="login-lead">Cada peça é conferida antes de seguir na linha.</p>
+        <div class="acesso-avaliacao">
+          <span class="eyebrow">Acesso de avaliação</span>
+          <p>Conta da apresentação. Selecione o e-mail e a senha para copiar.</p>
+          <dl>
+            <div>
+              <dt>E-mail</dt>
+              <dd>trabalho@unifecaf.com</dd>
+            </div>
+            <div>
+              <dt>Senha</dt>
+              <dd>trabalho123</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+      <form id="form-login" class="login-card">
+        <div class="login-form-topo">
+          <h2>Entrar</h2>
+          <p>Os campos já vêm com a conta de avaliação.</p>
+        </div>
+        <label class="login-campo">
+          <span>E-mail</span>
+          <input type="email" name="email" required autocomplete="username" maxlength="120" inputmode="email" spellcheck="false" value="trabalho@unifecaf.com">
+        </label>
+        <label class="login-campo">
+          <span>Senha</span>
+          <input type="password" name="senha" required autocomplete="current-password" value="trabalho123">
+        </label>
+        <p id="login-erro" class="login-erro aviso" role="alert"></p>
+        <button type="submit" class="btn primary login-enviar">Entrar no sistema</button>
+      </form>
+    </div>
+  </div>
+  <div class="app oculto" id="aplicacao">
+    <header class="shell">
+      <div class="brand">
+        <img src="{{ url_for('static', filename='logo.svg') }}" alt="" width="36" height="36">
+        <div>
+          <strong>Trabalho Unifecaf</strong>
+          <small>Controle de qualidade</small>
+        </div>
+      </div>
+      <div class="conta" id="menu-conta">
+        <button type="button" class="conta-botao" id="btn-conta" aria-haspopup="true" aria-expanded="false">
+          <span class="avatar" id="usuario-iniciais">OP</span>
+          <span class="conta-texto">
+            <strong id="usuario-nome">Operador</strong>
+            <small id="usuario-email"></small>
+          </span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="conta-menu oculto" id="conta-menu">
+          <button type="button" id="btn-senha">Trocar senha</button>
+          <button type="button" id="btn-sair">Sair</button>
+        </div>
+      </div>
+    </header>
+    <aside class="rail">
+      <nav class="menu" aria-label="Menu do sistema">
+        <button type="button" class="nav ativo" data-view="painel">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+          Painel
+        </button>
+        <button type="button" class="nav" data-acao="cadastrar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          Cadastrar nova peça
+        </button>
+        <button type="button" class="nav" data-view="pecas">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>
+          Listar peças aprovadas/reprovadas
+        </button>
+        <button type="button" class="nav" data-acao="remover">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg>
+          Remover peça cadastrada
+        </button>
+        <button type="button" class="nav" data-view="caixas">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l9-4 9 4-9 4-9-4zM3 8v8l9 4 9-4V8M12 12v8"/></svg>
+          Listar caixas fechadas
+        </button>
+        <button type="button" class="nav" data-view="relatorio">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5M4 19h16M8 16v-5M12 16V8M16 16v-3"/></svg>
+          Gerar relatório final
+        </button>
+        <button type="button" class="nav" data-view="codigo">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 6l-4 12"/></svg>
+          Como funciona
+        </button>
+      </nav>
+
+      <div class="rail-box" id="rail-box">
+        <span class="eyebrow">Caixa em enchimento</span>
+        <strong id="rail-ocupacao">—</strong>
+        <div class="slots" id="rail-slots"></div>
+      </div>
+
+    </aside>
+
+    <main>
+      <header class="top">
+        <div>
+          <p class="eyebrow" id="view-kicker">Operação</p>
+          <h1 id="view-title">Painel da linha</h1>
+        </div>
+        <div class="top-actions">
+          <label class="busca-topo">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="busca" type="search" placeholder="Buscar peça ou cor" aria-label="Buscar peças">
+          </label>
+          <button type="button" class="btn ghost" id="btn-demo">Exemplos</button>
+          <button type="button" class="btn primary" id="btn-nova">Nova peça</button>
+        </div>
+      </header>
+
+      <section class="kpis" id="kpis"></section>
+
+      <section class="view" id="view-painel">
+        <div class="grid-2">
+          <article class="card">
+            <h2>Critérios de aprovação</h2>
+            <ul class="regras">
+              <li><b>Peso</b> entre 95 g e 105 g</li>
+              <li><b>Cor</b> azul ou verde</li>
+              <li><b>Comprimento</b> entre 10 cm e 20 cm</li>
+            </ul>
+            <p class="nota">A peça entra em uma caixa somente se as três regras forem atendidas. Cada caixa fecha ao chegar em 10 peças.</p>
+          </article>
+          <article class="card">
+            <h2>Últimas inspeções</h2>
+            <div id="recentes" class="lista-compacta"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view oculto" id="view-pecas">
+        <div class="toolbar">
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab ativo" data-status="">Todas</button>
+            <button type="button" class="tab" data-status="aprovada">Aprovadas</button>
+            <button type="button" class="tab" data-status="reprovada">Reprovadas</button>
+          </div>
+        </div>
+        <div class="tabela-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Peça</th>
+                <th>Peso</th>
+                <th>Cor</th>
+                <th>Comprimento</th>
+                <th>Resultado</th>
+                <th>Caixa</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="corpo-pecas"></tbody>
+          </table>
+        </div>
+        <p class="vazio oculto" id="vazio-pecas">Nenhuma peça encontrada com esse filtro.</p>
+      </section>
+
+      <section class="view oculto" id="view-caixas">
+        <div class="toolbar">
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab ativo" data-caixa="fechada">Fechadas</button>
+            <button type="button" class="tab" data-caixa="todas">Todas</button>
+          </div>
+        </div>
+        <div class="caixas" id="lista-caixas"></div>
+        <p class="vazio oculto" id="vazio-caixas">Nenhuma caixa fechada ainda. A caixa fecha ao receber a 10ª peça aprovada.</p>
+      </section>
+
+      <section class="view oculto" id="view-relatorio">
+        <div class="relatorio" id="relatorio"></div>
+      </section>
+
+      <section class="view oculto" id="view-codigo">
+        <div class="docs">
+          <p class="docs-titulo">Tecnologias</p>
+          <article class="card">
+            <h2>Tecnologias usadas</h2>
+            <p>O Trabalho Unifecaf junta estas peças. Cada uma faz um trabalho só.</p>
+            <ul class="stack">
+              <li><strong>Python</strong> — é a linguagem do servidor. As regras de qualidade, o cadastro e o login estão escritos nela.</li>
+              <li><strong>Flask</strong> — publica a página e a API. Recebe o pedido do navegador e devolve JSON ou o HTML.</li>
+              <li><strong>Jinja</strong> — monta <code>templates/index.html</code>. O Flask chama <code>render_template</code> e entrega essa página na rota inicial.</li>
+              <li><strong>MariaDB ou MySQL, via PyMySQL</strong> — guarda peças, caixas, usuários e eventos. O banco se chama <code>gestao_pecas</code>.</li>
+              <li><strong>JWT, com PyJWT</strong> — assina o token de acesso e o de renovação. O programa confere a assinatura antes de aceitar o pedido.</li>
+              <li><strong>bcrypt</strong> — transforma a senha em um hash. O texto da senha não fica no banco.</li>
+              <li><strong>JavaScript no navegador</strong> — em <code>static/js/app.js</code>, troca as telas e chama a API. Não há script escrito dentro do HTML.</li>
+              <li><strong>Nginx, na produção</strong> — recebe o HTTPS, redireciona o HTTP e encaminha o pedido ao Flask em <code>127.0.0.1:5000</code>.</li>
+            </ul>
+          </article>
+
+          <p class="docs-titulo">Funções do sistema</p>
+          <article class="card">
+            <h2>O caminho de uma peça</h2>
+            <p>O operador informa identificador, peso, cor e comprimento. O sistema confere os três critérios. Se os três passam, a peça entra na caixa que está aberta. Quando essa caixa chega a 10 peças, ela fecha e a próxima aprovada abre outra.</p>
+            <p>Se o peso, a cor ou o comprimento falham, a peça fica reprovada. Todos os motivos são guardados, não só o primeiro. Essa peça não entra em caixa. Remover apaga só a peça escolhida. O relatório conta, no fim, quantas falharam em cada critério.</p>
+          </article>
+
+          <article class="card">
+            <h3>Cadastrar</h3>
+            <p>O cadastro só segue com identificador, peso e comprimento numéricos e cor preenchida. Identificador repetido é recusado. A inspeção roda na hora, dentro de <code>cadastrar_peca</code>.</p>
+            <p>A caixa só é procurada quando a peça foi aprovada. Sem caixa aberta, o sistema abre a de número seguinte.</p>
+            <p class="arquivo">app/servicos.py</p>
+            <pre><code>            caixa = None
+            fechou = False
+            if aprovada:
+                caixa = _caixa_aberta(cur) or _abrir_caixa(cur)</code></pre>
+          </article>
+
+          <article class="card">
+            <h3>Inspecionar</h3>
+            <p>O peso precisa ficar entre 95 g e 105 g. A cor, sem diferenciar maiúsculas, precisa ser azul ou verde. O comprimento precisa ficar entre 10 cm e 20 cm. Cada falha entra na lista de motivos.</p>
+            <p>A peça só é aprovada se essa lista termina vazia. Por isso peso, cor e comprimento errados ficam os três registrados.</p>
+            <p class="arquivo">app/qualidade.py</p>
+            <pre><code>PESO_MIN = 95.0
+PESO_MAX = 105.0
+COMPRIMENTO_MIN = 10.0
+COMPRIMENTO_MAX = 20.0
+CORES_PERMITIDAS = ("azul", "verde")
+CAPACIDADE_CAIXA = 10</code></pre>
+            <p>Este é o teste da cor. Peso e comprimento seguem o mesmo formato: se saem da faixa, um motivo é acrescentado.</p>
+            <p class="arquivo">app/qualidade.py</p>
+            <pre><code>    if cor_normalizada not in CORES_PERMITIDAS:
+        permitidas = " ou ".join(CORES_PERMITIDAS)
+        motivos.append(
+            {
+                "criterio": "cor",
+                "descricao": f"Cor '{cor}' não permitida. Aceitas: {permitidas}.",
+            }
+        )</code></pre>
+            <p>No fim, lista vazia significa aprovada.</p>
+            <p class="arquivo">app/qualidade.py</p>
+            <pre><code>    return len(motivos) == 0, motivos</code></pre>
+          </article>
+
+          <article class="card">
+            <h3>Caixa de 10</h3>
+            <p>A peça reprovada também é gravada, com os motivos. O campo da caixa fica vazio, porque não havia caixa para ela. Assim ela não ocupa vaga.</p>
+            <p class="arquivo">app/servicos.py</p>
+            <pre><code>                    json.dumps(motivos, ensure_ascii=False) if motivos else None,
+                    caixa["id"] if caixa else None,</code></pre>
+            <p>Depois de guardar uma aprovada, o programa conta as peças daquela caixa. Se a conta chega à capacidade, que é 10, a caixa passa a fechada. A próxima aprovada abre outra.</p>
+            <p class="arquivo">app/servicos.py</p>
+            <pre><code>                if ocupacao &gt;= int(caixa["capacidade"]):
+                    cur.execute(
+                        """
+                        UPDATE caixas
+                        SET status = 'fechada', fechada_em = NOW()
+                        WHERE id = %s
+                        """,
+                        (caixa["id"],),
+                    )</code></pre>
+          </article>
+
+          <article class="card">
+            <h3>Remover</h3>
+            <p><code>remover_peca</code> apaga somente a peça escolhida. A caixa continua no histórico, mesmo vazia.</p>
+            <p class="arquivo">app/servicos.py</p>
+            <pre><code>            cur.execute("DELETE FROM pecas WHERE id = %s", (identificador,))</code></pre>
+            <p>Se a peça saiu de uma caixa já fechada e a quantidade ficou abaixo de 10, essa caixa reabre só quando não existe outra aberta. Se já houver caixa em enchimento, a fechada permanece fechada, para a linha não ter duas abertas ao mesmo tempo.</p>
+            <p class="arquivo">app/servicos.py</p>
+            <pre><code>                if peca["caixa_status"] == "fechada" and ocupacao &lt; capacidade:
+                    aberta = _caixa_aberta(cur)
+                    if aberta is None:
+                        cur.execute(
+                            """
+                            UPDATE caixas
+                            SET status = 'aberta', fechada_em = NULL
+                            WHERE id = %s
+                            """,
+                            (peca["caixa_id"],),
+                        )</code></pre>
+          </article>
+
+          <article class="card">
+            <h3>Relatório</h3>
+            <p>O relatório percorre as peças reprovadas. Cada critério que aparece nos motivos soma um. A mesma peça pode contar em peso, cor e comprimento.</p>
+            <p class="arquivo">app/servicos.py</p>
+            <pre><code>    for peca in reprovadas:
+        criterios = {m["criterio"] for m in (peca.get("motivos") or [])}
+        for criterio in criterios:
+            if criterio in contagem:
+                contagem[criterio] += 1</code></pre>
+          </article>
+
+          <article class="card">
+            <h3>Banco, sem apagar o que já existe</h3>
+            <p>Na subida, <code>init_db</code> cria o banco e as tabelas só se ainda não existirem. Peças, caixas, usuários e eventos gravados permanecem.</p>
+            <p class="arquivo">app/db.py</p>
+            <pre><code>            cur.execute(
+                f"CREATE DATABASE IF NOT EXISTS `{nome}` "
+                "CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
+            )</code></pre>
+          </article>
+
+          <p class="docs-titulo">Login e sessão</p>
+          <article class="card">
+            <h2>Entrar com e-mail e senha</h2>
+            <p>O operador envia e-mail e senha. O servidor confere o hash e, se estiver certo, devolve dois tokens. O de acesso dura 15 minutos e vem no JSON. O de renovação dura 7 dias e vai em cookie.</p>
+            <p class="arquivo">app/seguranca.py</p>
+            <pre><code>ACCESS_SEGUNDOS = 15 * 60
+REFRESH_DIAS = 7</code></pre>
+            <p>A resposta leva o token curto no corpo e grava o longo no cookie.</p>
+            <p class="arquivo">app/auth.py</p>
+            <pre><code>    resposta = jsonify({
+        "message": "Login realizado com sucesso",
+        "erro": None,
+        "accessToken": acesso,
+        "expiresIn": ACCESS_SEGUNDOS,
+        "user": publico,
+    })
+    return _definir_refresh(resposta, refresh)</code></pre>
+          </article>
+
+          <article class="card">
+            <h2>Token de acesso na memória</h2>
+            <p>O JavaScript guarda o token de acesso na variável <code>accessToken</code>. Ela vive só na memória da aba. Cada chamada da API envia esse valor no cabeçalho <code>Authorization: Bearer</code>.</p>
+            <p class="arquivo">static/js/app.js</p>
+            <pre><code>let accessToken = null;</code></pre>
+            <p>Depois do login, o valor que veio no JSON entra nessa variável. Não é gravado em arquivo nem em armazenamento do navegador.</p>
+            <p class="arquivo">static/js/app.js</p>
+            <pre><code>    accessToken = corpo.accessToken;</code></pre>
+            <p class="arquivo">static/js/app.js</p>
+            <pre><code>  if (accessToken) headers.Authorization = `Bearer ${accessToken}`;</code></pre>
+            <h3>Por que não fica no localStorage</h3>
+            <p>O <code>localStorage</code> permanece no navegador e qualquer script da página consegue lê-lo. O token de acesso não é colocado lá. Ele fica só na variável, e some quando a aba fecha.</p>
+            <p>O token que dura 7 dias é o de renovação, e esse vai no cookie <code>HttpOnly</code>. O JavaScript não lê esse cookie. Assim um script da página não copia o token longo. O de acesso, mais curto, só existe enquanto a aba está aberta.</p>
+          </article>
+
+          <article class="card">
+            <h2>Renovação automática</h2>
+            <p>Se uma chamada da API responde 401, o navegador pede um token novo em <code>/api/auth/refresh</code>, enviando o cookie. O servidor devolve outro access token, de novo só para a memória. Se a renovação falha, a tela de login volta.</p>
+            <p class="arquivo">static/js/app.js</p>
+            <pre><code>  if (resposta.status === 401 &amp;&amp; repetir &amp;&amp; !url.includes("/api/auth/")) {
+    const renovou = await renovarSessao();</code></pre>
+            <p class="arquivo">static/js/app.js</p>
+            <pre><code>    renovando = fetch("/api/auth/refresh", { method: "POST", credentials: "include" })</code></pre>
+          </article>
+
+          <p class="docs-titulo">Medidas de segurança</p>
+          <article class="card">
+            <h2>Senha com bcrypt</h2>
+            <p>A senha digitada não é gravada. O que vai para a coluna <code>senha_hash</code> é o resultado do bcrypt, com custo 12. Conferir a senha compara o que foi digitado com esse hash.</p>
+            <p class="arquivo">app/seguranca.py</p>
+            <pre><code>def hash_senha(senha: str) -&gt; str:
+    return bcrypt.hashpw(senha.encode(), bcrypt.gensalt(rounds=12)).decode()</code></pre>
+          </article>
+
+          <article class="card">
+            <h2>Comparação em tempo constante</h2>
+            <p>Se o e-mail não existe, ou se o valor no banco não é um hash bcrypt, o programa ainda assim roda a comparação contra um hash fixo. A resposta não volta mais rápido nesse caso, e por isso não revela se a conta está cadastrada. E-mail desconhecido e senha errada recebem a mesma mensagem: credenciais inválidas.</p>
+            <p class="arquivo">app/seguranca.py</p>
+            <pre><code>def conferir_senha(senha: str, senha_hash: str | None) -&gt; bool:
+    material = (senha_hash or "").encode()
+    if not material.startswith(b"$2"):
+        material = _DUMMY
+    return bcrypt.checkpw(senha.encode(), material)</code></pre>
+          </article>
+
+          <article class="card">
+            <h2>Bloqueio após 5 falhas</h2>
+            <p>Cada senha errada de uma conta que existe soma uma falha. Na quinta, o usuário fica bloqueado por 15 minutos. Enquanto esse prazo não passa, o login responde que houve tentativas demais.</p>
+            <p class="arquivo">app/auth.py</p>
+            <pre><code>                    if falhas &gt;= 5:
+                        cur.execute(
+                            """
+                            UPDATE usuarios
+                            SET falhas_login = %s, bloqueado_ate = DATE_ADD(NOW(), INTERVAL 15 MINUTE)
+                            WHERE id = %s
+                            """,
+                            (falhas, usuario["id"]),
+                        )</code></pre>
+          </article>
+
+          <article class="card">
+            <h2>Limite de tentativas</h2>
+            <p>Além do bloqueio da conta, o mesmo e-mail só pode tentar o login 30 vezes em 15 minutos. Esse contador fica na memória do processo e é verificado antes da senha. Acima do limite, a resposta é 429.</p>
+            <p class="arquivo">app/seguranca.py</p>
+            <pre><code>JANELA_LOGIN = 15 * 60
+MAX_LOGIN = 30</code></pre>
+            <p class="arquivo">app/seguranca.py</p>
+            <pre><code>    if len(recentes) &gt;= MAX_LOGIN:
+        raise ErroOperacao(
+            "Muitas tentativas de login. Tente novamente em alguns minutos.",
+            429,
+            "RATE_LIMIT_EXCEEDED",
+        )</code></pre>
+          </article>
+
+          <article class="card">
+            <h2>Cookie HttpOnly, SameSite e Secure</h2>
+            <p>O cookie <code>refreshToken</code> não pode ser lido pelo JavaScript (<code>HttpOnly</code>). <code>SameSite</code> estrito evita que outro site envie esse cookie. <code>Secure</code> liga quando <code>COOKIE_SECURE</code> é verdadeiro ou, se essa opção não estiver definida, quando o ambiente é produção. O caminho do cookie é só <code>/api/auth</code>.</p>
+            <p class="arquivo">app/seguranca.py</p>
+            <pre><code>def opcoes_cookie() -&gt; dict:
+    return {
+        "httponly": True,
+        "secure": cookie_seguro(),
+        "samesite": "Strict",
+        "max_age": REFRESH_DIAS * 24 * 60 * 60,
+        "path": "/api/auth",
+    }</code></pre>
+          </article>
+
+          <article class="card">
+            <h2>Rotação do refresh</h2>
+            <p>Cada renovação emite outro token e substitui o que está gravado no usuário. O cookie antigo deixa de coincidir com o banco, então não serve de novo.</p>
+            <p class="arquivo">app/auth.py</p>
+            <pre><code>            acesso, novo = emitir_tokens(usuario["id"])
+            cur.execute("UPDATE usuarios SET refresh_token = %s WHERE id = %s", (novo, usuario["id"]))</code></pre>
+            <p>O token de renovação também carrega um resumo do navegador e do IP. Se essa origem muda, a sessão é encerrada.</p>
+          </article>
+
+          <article class="card">
+            <h2>Cabeçalhos de segurança</h2>
+            <p>Toda resposta leva estes cabeçalhos. A política de conteúdo só aceita script da própria origem. O frame é negado, o navegador não tenta adivinhar o tipo do arquivo, a referência enviada é restrita e câmera, microfone e localização ficam desligados. O HSTS, que obriga HTTPS, só sai quando o ambiente é produção.</p>
+            <p class="arquivo">app/seguranca.py</p>
+            <pre><code>    resposta.headers["X-Content-Type-Options"] = "nosniff"
+    resposta.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    resposta.headers["X-Frame-Options"] = "DENY"
+    resposta.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    resposta.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data:; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    if producao():
+        resposta.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"</code></pre>
+          </article>
+
+          <article class="card">
+            <h2>Auditoria</h2>
+            <p>Login certo, login inválido, bloqueio, conta inativa, sessão suspeita, saída e troca de senha geram uma linha em <code>eventos_seguranca</code>, com tipo, e-mail, IP e um detalhe curto.</p>
+            <p class="arquivo">app/auth.py</p>
+            <pre><code>                INSERT INTO eventos_seguranca (tipo, email, ip, detalhe)
+                VALUES (%s, %s, %s, %s)</code></pre>
+          </article>
+
+          <article class="card">
+            <h2>Troca de senha</h2>
+            <p>A senha nova precisa ter pelo menos 8 caracteres, com letra maiúscula, letra minúscula e número. Ao salvar, o hash muda e o refresh é apagado: a sessão longa deixa de valer e é preciso entrar de novo.</p>
+            <p>A senha de avaliação trabalho123 não cumpre essa política, porque não tem maiúscula. Ela entra na conta semeada; uma senha nova, trocada na tela, precisa ser forte.</p>
+            <p class="arquivo">app/seguranca.py</p>
+            <pre><code>    if len(senha) &lt; 8 or not any(c.isupper() for c in senha) or not any(c.islower() for c in senha) or not any(c.isdigit() for c in senha):</code></pre>
+            <p class="arquivo">app/auth.py</p>
+            <pre><code>            cur.execute(
+                "UPDATE usuarios SET senha_hash = %s, refresh_token = NULL WHERE id = %s",
+                (hash_senha(nova), usuario["id"]),
+            )</code></pre>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal oculto" id="modal-cadastro" role="dialog" aria-modal="true" aria-labelledby="titulo-cadastro">
+    <form class="dialog" id="form-peca">
+      <header>
+        <h2 id="titulo-cadastro">Cadastrar nova peça</h2>
+        <button type="button" class="icon" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <div class="campos">
+        <label>Identificador<input name="id" required maxlength="40" placeholder="QL-017" autocomplete="off"></label>
+        <label>Peso (g)<input name="peso" type="number" required min="0.01" step="0.01" placeholder="100"></label>
+        <label>Cor
+          <select name="cor" required>
+            <option value="azul">Azul</option>
+            <option value="verde">Verde</option>
+            <option value="vermelha">Vermelha</option>
+            <option value="amarela">Amarela</option>
+            <option value="preta">Preta</option>
+            <option value="branca">Branca</option>
+          </select>
+        </label>
+        <label>Comprimento (cm)<input name="comprimento" type="number" required min="0.01" step="0.01" placeholder="15"></label>
+      </div>
+      <p class="dica">A inspeção é automática. Fora da faixa, a peça é reprovada e não entra em caixa.</p>
+      <footer>
+        <button type="button" class="btn ghost" data-fechar>Cancelar</button>
+        <button type="submit" class="btn primary">Inspecionar e salvar</button>
+      </footer>
+    </form>
+  </div>
+
+  <div class="modal oculto" id="modal-remover" role="dialog" aria-modal="true" aria-labelledby="titulo-remover">
+    <form class="dialog" id="form-remover">
+      <header>
+        <h2 id="titulo-remover">Remover peça cadastrada</h2>
+        <button type="button" class="icon" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <label>Peça
+        <select name="id" id="select-remover" required></select>
+      </label>
+      <p class="aviso" id="aviso-remover">A peça sai do cadastro. Se ela estava em uma caixa fechada, a ocupação é atualizada.</p>
+      <footer>
+        <button type="button" class="btn ghost" data-fechar>Cancelar</button>
+        <button type="submit" class="btn perigo">Remover peça</button>
+      </footer>
+    </form>
+  </div>
+
+  <div class="modal oculto" id="modal-detalhe" role="dialog" aria-modal="true" aria-labelledby="titulo-detalhe">
+    <div class="dialog">
+      <header>
+        <h2 id="titulo-detalhe">Inspeção</h2>
+        <button type="button" class="icon" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <div id="corpo-detalhe"></div>
+      <footer>
+        <button type="button" class="btn primary" data-fechar>Fechar</button>
+      </footer>
+    </div>
+  </div>
+
+  <div class="modal oculto" id="modal-caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-caixa">
+    <div class="dialog amplo">
+      <header>
+        <h2 id="titulo-caixa">Caixa</h2>
+        <button type="button" class="icon" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <div id="corpo-caixa"></div>
+      <footer>
+        <button type="button" class="btn primary" data-fechar>Fechar</button>
+      </footer>
+    </div>
+  </div>
+
+  <div class="modal oculto" id="modal-demo" role="dialog" aria-modal="true" aria-labelledby="titulo-demo">
+    <div class="dialog">
+      <header>
+        <h2 id="titulo-demo">Carregar exemplos</h2>
+        <button type="button" class="icon" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <p>Inclui 16 peças de demonstração (12 aprovadas e 4 reprovadas). Identificadores que já existem são mantidos. Nenhum dado atual é apagado.</p>
+      <footer>
+        <button type="button" class="btn ghost" data-fechar>Cancelar</button>
+        <button type="button" class="btn primary" id="confirmar-demo">Incluir lote</button>
+      </footer>
+    </div>
+  </div>
+
+  <div class="modal oculto" id="modal-senha" role="dialog" aria-modal="true" aria-labelledby="titulo-senha">
+    <form class="dialog" id="form-senha">
+      <header>
+        <h2 id="titulo-senha">Trocar senha</h2>
+        <button type="button" class="icon" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <label>Senha atual<input type="password" name="senha_atual" required autocomplete="current-password"></label>
+      <label>Nova senha<input type="password" name="senha_nova" required autocomplete="new-password" minlength="8"></label>
+      <p class="dica">Mínimo de 8 caracteres, com maiúscula, minúscula e número.</p>
+      <footer>
+        <button type="button" class="btn ghost" data-fechar>Cancelar</button>
+        <button type="submit" class="btn primary">Salvar</button>
+      </footer>
+    </form>
+  </div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

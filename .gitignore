@@ -1,0 +1,20 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# segredos de ambiente (o exemplo sem valores reais continua no git)
+.env
+.env.*
+!.env.example
+
+# chaves e certificados privados (VPS, nginx, TLS)
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+id_rsa
+id_rsa.pub
+secrets/
+credentials.json

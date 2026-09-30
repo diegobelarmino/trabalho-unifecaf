@@ -1,0 +1,51 @@
+-- Gestão de peças, qualidade e armazenamento
+-- Banco: MariaDB / MySQL (XAMPP)
+
+CREATE DATABASE IF NOT EXISTS gestao_pecas
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE gestao_pecas;
+
+CREATE TABLE IF NOT EXISTS caixas (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  numero INT NOT NULL UNIQUE,
+  status ENUM('aberta', 'fechada') NOT NULL DEFAULT 'aberta',
+  capacidade INT NOT NULL DEFAULT 10,
+  criada_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  fechada_em DATETIME NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS usuarios (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(80) NOT NULL,
+  email VARCHAR(120) NOT NULL UNIQUE,
+  senha_hash VARCHAR(255) NOT NULL,
+  ativo TINYINT(1) NOT NULL DEFAULT 1,
+  refresh_token VARCHAR(700) NULL,
+  ultimo_login DATETIME NULL,
+  falhas_login INT NOT NULL DEFAULT 0,
+  bloqueado_ate DATETIME NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS eventos_seguranca (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  tipo VARCHAR(40) NOT NULL,
+  email VARCHAR(120) NULL,
+  ip VARCHAR(64) NULL,
+  detalhe VARCHAR(255) NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS pecas (
+  id VARCHAR(40) PRIMARY KEY,
+  peso DECIMAL(8,2) NOT NULL,
+  cor VARCHAR(30) NOT NULL,
+  comprimento DECIMAL(8,2) NOT NULL,
+  status ENUM('aprovada', 'reprovada') NOT NULL,
+  motivos JSON NULL,
+  caixa_id INT NULL,
+  criada_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_peca_caixa FOREIGN KEY (caixa_id) REFERENCES caixas (id)
+) ENGINE=InnoDB;
