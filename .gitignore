@@ -18,3 +18,9 @@ id_rsa
 id_rsa.pub
 secrets/
 credentials.json
+
+# parte teórica, roteiro do vídeo e PDF de teste (só no disco local)
+PARTE_TEORICA.md
+PARTE_TEORICA.pdf
+ROTEIRO_VIDEO.md
+teste.pdf
